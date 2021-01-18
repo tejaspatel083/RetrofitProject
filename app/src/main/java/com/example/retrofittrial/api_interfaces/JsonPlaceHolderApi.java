@@ -11,9 +11,9 @@ import retrofit2.http.POST;
 
 public interface JsonPlaceHolderApi {
 
-    @GET("posts")
+    @GET("getData")
     Call<List<Post>> getPosts();
 
-    @POST("posts")
+    @POST("register")
     Call<Post> createPost(@Body Post post);
 }

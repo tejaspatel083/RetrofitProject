@@ -3,11 +3,25 @@ package com.example.retrofittrial;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.util.JsonWriter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.retrofittrial.api_interfaces.JsonPlaceHolderApi;
 import com.example.retrofittrial.models.Post;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.json.JSONStringer;
+
+import java.io.IOException;
+import java.io.StringWriter;
 import java.util.List;
 
 import retrofit2.Call;
@@ -15,6 +29,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.converter.scalars.ScalarsConverterFactory;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -29,20 +44,27 @@ public class MainActivity extends AppCompatActivity {
         textViewResult = findViewById(R.id.text_view_result);
 
 
-        createPost();
+       //getPosts();
+       createPost();
     }
 
-    void createPost()
+    public void createPost()
     {
-        Post post = new Post(83,"Mock Title","Mock Body Data");
+
+        Post post = new Post("aaa@aaa.com","aaa");
+
+        Gson gson = new Gson();
+        String json = gson.toJson(post);
+
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://jsonplaceholder.typicode.com/")
+                .baseUrl("http://10.0.2.2:3000/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
         JsonPlaceHolderApi jsonPlaceHolderApi = retrofit.create(JsonPlaceHolderApi.class);
 
         Call<Post> call = jsonPlaceHolderApi.createPost(post);
+
 
         call.enqueue(new Callback<Post>() {
             @Override
@@ -58,12 +80,11 @@ public class MainActivity extends AppCompatActivity {
 
                 String content = "";
                 content += "CODE: " + response.code() + "\n";
-                content += "ID: " + post.getId() + "\n";
-                content += "User Id: " + post.getUserId() + "\n";
-                content += "Title: " + post.getTitle() + "\n";
-                content += "Text: " + post.getText() + "\n\n";
+                content += "Email: " + postResponse.getEmail() + "\n";
+                content += "Password: " + postResponse.getPassword() + "\n";
 
                 textViewResult.append(content);
+
             }
 
             @Override
@@ -73,16 +94,18 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+
     }
 
     public void getPosts()
     {
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://jsonplaceholder.typicode.com/")
+                .baseUrl("http://10.0.2.2:3000/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
         JsonPlaceHolderApi jsonPlaceHolderApi = retrofit.create(JsonPlaceHolderApi.class);
+
         Call<List<Post>> call = jsonPlaceHolderApi.getPosts();
 
         call.enqueue(new Callback<List<Post>>() {
@@ -100,10 +123,9 @@ public class MainActivity extends AppCompatActivity {
                 for (Post post:posts)
                 {
                     String content = "";
-                    content += "ID: " + post.getId() + "\n";
-                    content += "User Id: " + post.getUserId() + "\n";
-                    content += "Title: " + post.getTitle() + "\n";
-                    content += "Text: " + post.getText() + "\n\n";
+                    content += "User Id: " + post.getId() + "\n";
+                    content += "Email: " + post.getEmail() + "\n";
+                    content += "Password: " + post.getPassword() + "\n\n";
 
                     textViewResult.append(content);
                 }
@@ -116,4 +138,5 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
 }
